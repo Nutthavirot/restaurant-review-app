@@ -48,18 +48,20 @@ npm run dev
 
 ## Screenshots
 ### หน้าแรก
-![Home](screenshots/home.png)
+![Home](screenshots/image1.png)
 
 ### รายละเอียดร้าน
-![Detail](screenshots/detail.png)
+![Detail](screenshots/image2.png)
 
 ### ฟอร์มรีวิว
-![Review](screenshots/review-form.png)
+![Review](screenshots/image3.png)
+
+![Review](screenshots/image4.png)
 
 ## ผู้พัฒนา
-- ชื่อ-นามสกุล
-- รหัสนักศึกษา
-- Email
+- ณัฐวิโรจน์ สุทธิธารมงคล
+- 67543210026-0
+- voltvolt.nut@gmail.com
 
 ## License
 MIT License
