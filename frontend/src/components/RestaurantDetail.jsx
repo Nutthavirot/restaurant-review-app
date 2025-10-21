@@ -17,14 +17,21 @@ function RestaurantDetail({ restaurantId, onBack }) {
       setLoading(true);
       setError(null);
       
-      // TODO 1: เรียก getRestaurantById
-      // const result = await getRestaurantById(restaurantId);
+      // ✅ TODO 1: เรียก getRestaurantById
+      const result = await getRestaurantById(restaurantId);
       
-      // TODO 2: ตั้งค่า state
-      // if (result.success) {
-      //   setRestaurant(result.data);
-      // }
-      
+      // ✅ TODO 2: ตั้งค่า state
+      // รูปแบบข้อมูลขึ้นอยู่กับ API ของคุณ — 
+      // ถ้า API ส่งกลับเป็น { success: true, data: {...} }
+      // ให้ใช้ if-check แบบด้านล่าง
+      if (result.success) {
+        setRestaurant(result.data);
+      } else {
+        // ถ้า API ส่งกลับเป็น object ธรรมดา เช่น { id, name, ... }
+        // ให้ fallback แบบนี้
+        setRestaurant(result);
+      }
+
     } catch (err) {
       setError('ไม่สามารถโหลดข้อมูลร้านได้');
       console.error(err);
@@ -34,7 +41,7 @@ function RestaurantDetail({ restaurantId, onBack }) {
   };
 
   const handleReviewAdded = () => {
-    // Refresh ข้อมูลหลังจากเพิ่มรีวิวใหม่
+    // ✅ Refresh ข้อมูลหลังจากเพิ่มรีวิวใหม่
     fetchRestaurantDetail();
   };
 
@@ -66,7 +73,9 @@ function RestaurantDetail({ restaurantId, onBack }) {
                 : 'ยังไม่มีรีวิว'}
             </span>
             <span className="price">{'฿'.repeat(restaurant.priceRange)}</span>
-            <span className="total-reviews">({restaurant.totalReviews} รีวิว)</span>
+            <span className="total-reviews">
+              ({restaurant.totalReviews} รีวิว)
+            </span>
           </div>
         </div>
       </div>

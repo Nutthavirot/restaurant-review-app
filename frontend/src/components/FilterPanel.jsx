@@ -14,20 +14,23 @@ function FilterPanel({ onFilterChange, filters }) {
     });
   };
 
-  // ========================================
-  // TODO 1: เพิ่มฟังก์ชัน handleRatingChange
-  // ========================================
-  // รับ parameter minRating
-  // เรียก onFilterChange({ minRating: minRating || '' })
-  
-  // ========================================
-  // TODO 2: เพิ่มฟังก์ชัน handlePriceChange
-  // ========================================
-  // รับ parameter priceRange
-  // เรียก onFilterChange({ priceRange: priceRange || '' })
+  // ✅ TODO 1: ฟังก์ชัน handleRatingChange
+  const handleRatingChange = (minRating) => {
+    onFilterChange({ 
+      minRating: minRating || '' 
+    });
+  };
+
+  // ✅ TODO 2: ฟังก์ชัน handlePriceChange
+  const handlePriceChange = (priceRange) => {
+    onFilterChange({ 
+      priceRange: priceRange || '' 
+    });
+  };
 
   return (
     <div className="filter-panel">
+      {/* ===== หมวดหมู่ ===== */}
       <div className="filter-group">
         <label>หมวดหมู่:</label>
         <select 
@@ -40,10 +43,7 @@ function FilterPanel({ onFilterChange, filters }) {
         </select>
       </div>
 
-      {/* ========================================
-          TODO 3: เพิ่ม filter สำหรับ minRating
-          ======================================== */}
-      {/* 
+      {/* ===== คะแนนขั้นต่ำ ===== */}
       <div className="filter-group">
         <label>คะแนนขั้นต่ำ:</label>
         <select 
@@ -56,12 +56,8 @@ function FilterPanel({ onFilterChange, filters }) {
           <option value="2">2 ดาวขึ้นไป ⭐⭐</option>
         </select>
       </div>
-      */}
 
-      {/* ========================================
-          TODO 4: เพิ่ม filter สำหรับ priceRange
-          ======================================== */}
-      {/* 
+      {/* ===== ช่วงราคา ===== */}
       <div className="filter-group">
         <label>ช่วงราคา:</label>
         <select 
@@ -70,11 +66,10 @@ function FilterPanel({ onFilterChange, filters }) {
         >
           <option value="">ทั้งหมด</option>
           <option value="1">฿ (ไม่เกิน 100)</option>
-          <option value="2">฿฿ (100-300)</option>
+          <option value="2">฿฿ (100–300)</option>
           <option value="3">฿฿฿ (มากกว่า 300)</option>
         </select>
       </div>
-      */}
     </div>
   );
 }
