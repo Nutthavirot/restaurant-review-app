@@ -14,35 +14,29 @@ function ReviewForm({ restaurantId, onReviewAdded }) {
   const validateForm = () => {
     const newErrors = {};
     
-    // ========================================
-    // TODO 1: Validate userName (2-50 ตัวอักษร)
-    // ========================================
-    // if (!formData.userName.trim()) {
-    //   newErrors.userName = 'กรุณากรอกชื่อ';
-    // } else if (formData.userName.trim().length < 2) {
-    //   newErrors.userName = 'ชื่อต้องมีอย่างน้อย 2 ตัวอักษร';
-    // } else if (formData.userName.trim().length > 50) {
-    //   newErrors.userName = 'ชื่อต้องไม่เกิน 50 ตัวอักษร';
-    // }
+    // ✅ TODO 1: Validate userName (2–50 ตัวอักษร)
+    if (!formData.userName.trim()) {
+      newErrors.userName = 'กรุณากรอกชื่อ';
+    } else if (formData.userName.trim().length < 2) {
+      newErrors.userName = 'ชื่อต้องมีอย่างน้อย 2 ตัวอักษร';
+    } else if (formData.userName.trim().length > 50) {
+      newErrors.userName = 'ชื่อต้องไม่เกิน 50 ตัวอักษร';
+    }
     
-    // ========================================
-    // TODO 2: Validate rating (1-5)
-    // ========================================
-    // const ratingNum = parseInt(formData.rating);
-    // if (isNaN(ratingNum) || ratingNum < 1 || ratingNum > 5) {
-    //   newErrors.rating = 'คะแนนต้องอยู่ระหว่าง 1-5';
-    // }
+    // ✅ TODO 2: Validate rating (1–5)
+    const ratingNum = parseInt(formData.rating);
+    if (isNaN(ratingNum) || ratingNum < 1 || ratingNum > 5) {
+      newErrors.rating = 'คะแนนต้องอยู่ระหว่าง 1–5';
+    }
     
-    // ========================================
-    // TODO 3: Validate comment (10-500 ตัวอักษร)
-    // ========================================
-    // if (!formData.comment.trim()) {
-    //   newErrors.comment = 'กรุณากรอกความคิดเห็น';
-    // } else if (formData.comment.trim().length < 10) {
-    //   newErrors.comment = 'ความคิดเห็นต้องมีอย่างน้อย 10 ตัวอักษร';
-    // } else if (formData.comment.trim().length > 500) {
-    //   newErrors.comment = 'ความคิดเห็นต้องไม่เกิน 500 ตัวอักษร';
-    // }
+    // ✅ TODO 3: Validate comment (10–500 ตัวอักษร)
+    if (!formData.comment.trim()) {
+      newErrors.comment = 'กรุณากรอกความคิดเห็น';
+    } else if (formData.comment.trim().length < 10) {
+      newErrors.comment = 'ความคิดเห็นต้องมีอย่างน้อย 10 ตัวอักษร';
+    } else if (formData.comment.trim().length > 500) {
+      newErrors.comment = 'ความคิดเห็นต้องไม่เกิน 500 ตัวอักษร';
+    }
     
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -51,38 +45,37 @@ function ReviewForm({ restaurantId, onReviewAdded }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    if (!validateForm()) {
-      return;
-    }
+    if (!validateForm()) return;
     
     try {
       setSubmitting(true);
       
-      // TODO 4: เรียก addReview API
-      // const result = await addReview({
-      //   restaurantId,
-      //   ...formData,
-      //   rating: parseInt(formData.rating)
-      // });
+      // ✅ TODO 4: เรียก addReview API
+      const result = await addReview({
+        restaurantId,
+        ...formData,
+        rating: parseInt(formData.rating)
+      });
       
-      // TODO 5: ถ้าสำเร็จ
-      // if (result.success) {
-      //   alert('เพิ่มรีวิวสำเร็จ! ขอบคุณสำหรับความคิดเห็น');
-      //   
-      //   // reset form
-      //   setFormData({
-      //     userName: '',
-      //     rating: 5,
-      //     comment: '',
-      //     visitDate: new Date().toISOString().split('T')[0]
-      //   });
-      //   setErrors({});
-      //   
-      //   // เรียก callback เพื่ออัพเดทรีวิว
-      //   if (onReviewAdded) {
-      //     onReviewAdded();
-      //   }
-      // }
+      // ✅ TODO 5: ถ้าสำเร็จ
+      // (กรณี API มีโครงสร้าง { success: true, data: {...} })
+      if (result.success || result.id) {
+        alert('เพิ่มรีวิวสำเร็จ! ขอบคุณสำหรับความคิดเห็น');
+        
+        // reset form
+        setFormData({
+          userName: '',
+          rating: 5,
+          comment: '',
+          visitDate: new Date().toISOString().split('T')[0]
+        });
+        setErrors({});
+        
+        // callback แจ้ง parent component เพื่อ refresh รีวิว
+        if (onReviewAdded) {
+          onReviewAdded();
+        }
+      }
       
     } catch (error) {
       console.error('Error adding review:', error);
@@ -96,23 +89,25 @@ function ReviewForm({ restaurantId, onReviewAdded }) {
     <div className="review-form">
       <h3>เขียนรีวิว</h3>
       <form onSubmit={handleSubmit}>
+        {/* ชื่อผู้ใช้ */}
         <div className="form-group">
           <label>ชื่อของคุณ *</label>
           <input
             type="text"
             value={formData.userName}
-            onChange={(e) => setFormData({...formData, userName: e.target.value})}
+            onChange={(e) => setFormData({ ...formData, userName: e.target.value })}
             placeholder="กรอกชื่อ-นามสกุล"
             className={errors.userName ? 'invalid' : ''}
           />
           {errors.userName && <span className="error">{errors.userName}</span>}
         </div>
 
+        {/* คะแนน */}
         <div className="form-group">
           <label>คะแนน *</label>
           <select
             value={formData.rating}
-            onChange={(e) => setFormData({...formData, rating: parseInt(e.target.value)})}
+            onChange={(e) => setFormData({ ...formData, rating: parseInt(e.target.value) })}
             className={errors.rating ? 'invalid' : ''}
           >
             <option value="5">⭐⭐⭐⭐⭐ ดีเยี่ยม</option>
@@ -124,11 +119,12 @@ function ReviewForm({ restaurantId, onReviewAdded }) {
           {errors.rating && <span className="error">{errors.rating}</span>}
         </div>
 
+        {/* ความคิดเห็น */}
         <div className="form-group">
           <label>ความคิดเห็น *</label>
           <textarea
             value={formData.comment}
-            onChange={(e) => setFormData({...formData, comment: e.target.value})}
+            onChange={(e) => setFormData({ ...formData, comment: e.target.value })}
             placeholder="เล่าประสบการณ์การทานอาหารที่ร้านนี้... (อย่างน้อย 10 ตัวอักษร)"
             rows="4"
             className={errors.comment ? 'invalid' : ''}
@@ -139,12 +135,13 @@ function ReviewForm({ restaurantId, onReviewAdded }) {
           {errors.comment && <span className="error">{errors.comment}</span>}
         </div>
 
+        {/* วันที่เข้าร้าน */}
         <div className="form-group">
           <label>วันที่เข้าร้าน</label>
           <input
             type="date"
             value={formData.visitDate}
-            onChange={(e) => setFormData({...formData, visitDate: e.target.value})}
+            onChange={(e) => setFormData({ ...formData, visitDate: e.target.value })}
             max={new Date().toISOString().split('T')[0]}
           />
         </div>
