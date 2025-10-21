@@ -24,13 +24,13 @@ function RestaurantList({ onSelectRestaurant }) {
     try {
       setLoading(true);
       setError(null);
-      
+
       // 2. เรียก getRestaurants พร้อม filters
       const result = await getRestaurants(filters);
-      
+
       // 3. ตั้งค่า state
       setRestaurants(result.data);
-      
+
     } catch (err) {
       setError('ไม่สามารถโหลดข้อมูลได้ กรุณาลองใหม่อีกครั้ง');
       console.error(err);
@@ -41,22 +41,29 @@ function RestaurantList({ onSelectRestaurant }) {
 
   // 4. handleSearch
   const handleSearch = (searchTerm) => {
-    setFilters(prev => ({ ...prev, search: searchTerm }));
+    setFilters(prev => {
+      if (prev.search === searchTerm) return prev; // ไม่เปลี่ยน
+      return { ...prev, search: searchTerm };
+    });
   };
 
   // 5. handleFilterChange
   const handleFilterChange = (newFilters) => {
-    setFilters(prev => ({ ...prev, ...newFilters }));
+    setFilters(prev => {
+      const updated = { ...prev, ...newFilters };
+      if (JSON.stringify(prev) === JSON.stringify(updated)) return prev;
+      return updated;
+    });
   };
 
   return (
     <div className="restaurant-list-container">
       <SearchBar onSearch={handleSearch} />
       <FilterPanel onFilterChange={handleFilterChange} filters={filters} />
-      
+
       {loading && <div className="loading">กำลังโหลด...</div>}
       {error && <div className="error">{error}</div>}
-      
+
       {!loading && !error && (
         <>
           {restaurants.length === 0 ? (
@@ -64,7 +71,7 @@ function RestaurantList({ onSelectRestaurant }) {
           ) : (
             <div className="restaurant-grid">
               {restaurants.map(restaurant => (
-                <RestaurantCard 
+                <RestaurantCard
                   key={restaurant.id}
                   restaurant={restaurant}
                   onClick={onSelectRestaurant}

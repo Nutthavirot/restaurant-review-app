@@ -89,12 +89,6 @@ function App() {
                     />
                 ) : (
                     <>
-                        {/* Controls: Search + Filters (แยกบล็อกชัดเจน เข้าธีมเดิม) */}
-                        <section aria-label="ตัวควบคุมการค้นหาและกรอง">
-                            <SearchBar value={searchInput} onChange={setSearchInput} />
-                            <FilterPanel filters={filters} onFilterChange={handleFilterChange} />
-                        </section>
-
                         {/* รายการร้าน */}
                         <section aria-label="รายการร้านอาหาร">
                             <RestaurantList

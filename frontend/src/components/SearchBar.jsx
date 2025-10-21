@@ -1,76 +1,97 @@
-import { useState, useEffect } from 'react';
+// frontend/src/components/SearchBar.jsx
+import { useEffect, useMemo, useRef, useState } from 'react';
 
-function SearchBar({ onSearch }) {
-  const [searchTerm, setSearchTerm] = useState('');
+export default function SearchBar({
+  value = '',
+  onChange,
+  onSearch,
+  onClear,
+  autoFocus = false,
+  debounceMs = 0, // ตั้ง >0 ถ้าอยากดีบาวน์การพิมพ์ก่อนแจ้ง onChange
+  placeholder = 'ค้นหาร้านอาหาร...',
+}) {
+  const inputRef = useRef(null);
+  const [internal, setInternal] = useState(value ?? '');
 
-  // ========================================
-  // อธิบาย: debounce effect
-  // ========================================
-  // เป้าหมาย: รอให้ผู้ใช้พิมพ์เสร็จก่อน ค่อยค่อย search (ประหยัด API calls)
-  //
-  // ทำไมต้องใช้ debounce?
-  // - ถ้าผู้ใช้พิมพ์ "ส้มตำ" (5 ตัวอักษร)
-  // - ไม่มี debounce จะเรียก API 5 ครั้ง: "ส", "ส้", "ส้ม", "ส้มต", "ส้มตำ"
-  // - มี debounce จะเรียก API แค่ 1 ครั้ง หลังจากพิมพ์เสร็จ 500ms
-  //
-  // ขั้นตอน:
-  // useEffect(() => {
-  //   const timer = setTimeout(() => {
-  //     if (searchTerm !== undefined) {
-  //       onSearch(searchTerm);
-  //     }
-  //   }, 500);
-  //   
-  //   return () => clearTimeout(timer);
-  // }, [searchTerm, onSearch]);
+  // sync external value -> internal
+  useEffect(() => { setInternal(value ?? ''); }, [value]);
 
-  // Debounce effect
+  // debounce onChange (ถ้ากำหนด debounceMs)
   useEffect(() => {
-    const timer = setTimeout(() => {
-      if (searchTerm !== undefined) {
-        onSearch(searchTerm);
+    if (!onChange) return;
+    if (!debounceMs) { onChange(internal); return; }
+    const t = setTimeout(() => onChange(internal), debounceMs);
+    return () => clearTimeout(t);
+  }, [internal, onChange, debounceMs]);
+
+  useEffect(() => {
+    if (autoFocus && inputRef.current) inputRef.current.focus();
+  }, [autoFocus]);
+
+  // Global shortcut: Ctrl/Cmd + K เพื่อโฟกัสช่องค้นหา
+  useEffect(() => {
+    const handler = (e) => {
+      const isMac = navigator.platform.toUpperCase().includes('MAC');
+      if ((isMac ? e.metaKey : e.ctrlKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        inputRef.current?.focus();
       }
-    }, 500);
-    
-    return () => clearTimeout(timer);
-  }, [searchTerm, onSearch]);
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, []);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSearch(searchTerm);
+    onSearch?.(internal.trim());
   };
 
-  const handleClear = () => {
-    setSearchTerm('');
-    onSearch('');
+  const clear = () => {
+    setInternal('');
+    onClear?.();
+    // ถ้าไม่มี debounce, แจ้ง onChange('') ทันที (ทำไปแล้วใน effect ข้างบน)
+    if (!debounceMs && onChange) onChange('');
+    inputRef.current?.focus();
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      if (internal) clear();
+    }
   };
 
   return (
-    <form className="search-bar" onSubmit={handleSubmit}>
+    <form className="search-bar" role="search" onSubmit={handleSubmit}>
       <div className="search-input-wrapper">
         <input
-          type="text"
-          placeholder="ค้นหาร้านอาหาร..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+          ref={inputRef}
+          type="search"
+          inputMode="search"
+          autoComplete="off"
+          aria-label="ช่องค้นหาร้านอาหาร"
+          placeholder={placeholder}
+          value={internal}
+          onChange={(e) => setInternal(e.target.value)}
+          onKeyDown={handleKeyDown}
           className="search-input"
         />
-        {searchTerm && (
-          <button 
-            type="button" 
-            onClick={handleClear}
+        {internal && (
+          <button
+            type="button"
+            onClick={clear}
             className="clear-button"
-            aria-label="Clear search"
+            aria-label="ล้างคำค้นหา"
+            title="ล้าง (Esc)"
           >
             ✕
           </button>
         )}
       </div>
-      <button type="submit" className="search-button">
+
+      <button type="submit" className="search-button" aria-label="ค้นหา">
         🔍 ค้นหา
       </button>
     </form>
   );
 }
-
-export default SearchBar;

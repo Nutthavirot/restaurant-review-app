@@ -32,8 +32,8 @@ app.use('/api/reviews', reviewRoutes);
 app.get('/api/stats', async (req, res) => {
   try {
     // อ่านไฟล์ JSON
-    const restaurants = await readJsonFile('data/restaurants.json');
-    const reviews = await readJsonFile('data/reviews.json');
+    const restaurants = await readJsonFile('restaurants.json');
+    const reviews = await readJsonFile('reviews.json');
 
     // จำนวนร้านอาหารทั้งหมด
     const totalRestaurants = restaurants.length;
